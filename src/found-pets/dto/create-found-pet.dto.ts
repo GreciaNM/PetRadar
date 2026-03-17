@@ -1,0 +1,50 @@
+import {
+  IsEmail,
+  IsNotEmpty,
+  IsNumber,
+  IsOptional,
+  IsString,
+} from 'class-validator';
+
+export class CreateFoundPetDto {
+  @IsString()
+  species: string;
+
+  @IsOptional()
+  @IsString()
+  breed?: string;
+
+  @IsString()
+  color: string;
+
+  @IsString()
+  size: string;
+
+  @IsString()
+  description: string;
+
+  @IsOptional()
+  @IsString()
+  photo_url?: string;
+
+  @IsString()
+  finder_name: string;
+
+  @IsEmail()
+  finder_email: string;
+
+  @IsString()
+  finder_phone: string;
+
+  @IsNumber()
+  lat: number;
+
+  @IsNumber()
+  lng: number;
+
+  @IsString()
+  address: string;
+
+  @IsString()
+  found_date: string;
+}
