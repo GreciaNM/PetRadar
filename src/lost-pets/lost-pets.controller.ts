@@ -1,6 +1,6 @@
-import { Body, Controller, Post } from '@nestjs/common';
-import { CreateLostPetDto } from './dto/create-lost-pet.dto';
+import { Body, Controller, Get, Post } from '@nestjs/common';
 import { LostPetsService } from './lost-pets.service';
+import { CreateLostPetDto } from './dto/create-lost-pet.dto';
 
 @Controller('lost-pets')
 export class LostPetsController {
@@ -9,5 +9,10 @@ export class LostPetsController {
   @Post()
   create(@Body() dto: CreateLostPetDto) {
     return this.lostPetsService.create(dto);
+  }
+
+  @Get()
+  findAll() {
+    return this.lostPetsService.findAll();
   }
 }

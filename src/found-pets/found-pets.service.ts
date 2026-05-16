@@ -6,6 +6,7 @@ import { CreateFoundPetDto } from './dto/create-found-pet.dto';
 import { LostPet } from '../lost-pets/lost-pet.entity';
 import { MailService } from '../mail/mail.service';
 import { ConfigService } from '@nestjs/config';
+import { RedisService } from '../redis/redis.service';
 
 @Injectable()
 export class FoundPetsService {
@@ -18,6 +19,7 @@ export class FoundPetsService {
 
     private readonly mailService: MailService,
     private readonly configService: ConfigService,
+    private readonly redisService: RedisService,
   ) {}
 
   async create(dto: CreateFoundPetDto) {
@@ -31,6 +33,8 @@ export class FoundPetsService {
     });
 
     const saved = await this.foundPetRepository.save(foundPet);
+
+    await this.redisService.del('found-pets');
 
     const nearbyLostPets = await this.lostPetRepository.query(
       `
@@ -52,13 +56,13 @@ export class FoundPetsService {
         ST_X(location::geometry) AS lng,
         ST_Y(location::geometry) AS lat,
         ST_Distance(
-          location,
+          location::geography,
           ST_SetSRID(ST_MakePoint($1, $2), 4326)::geography
         ) AS distance
       FROM lost_pets
       WHERE is_active = true
         AND ST_DWithin(
-          location,
+          location::geography,
           ST_SetSRID(ST_MakePoint($1, $2), 4326)::geography,
           500
         )
@@ -136,5 +140,23 @@ export class FoundPetsService {
       matches: cleanMatches,
       emailSent,
     };
+  }
+
+  async findAll() {
+    const cache = await this.redisService.get('found-pets');
+
+    if (cache) {
+      return JSON.parse(cache);
+    }
+
+    const pets = await this.foundPetRepository.find();
+
+    await this.redisService.set(
+      'found-pets',
+      JSON.stringify(pets),
+      60,
+    );
+
+    return pets;
   }
 }

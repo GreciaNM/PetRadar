@@ -1,0 +1,39 @@
+services:
+  postgres:
+    image: postgis/postgis:16-3.4
+    container_name: petradar-postgres
+    restart: always
+    environment:
+      POSTGRES_DB: petradar_db
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - "5433:5432"
+
+  redis:
+    image: redis:7-alpine
+    container_name: petradar-redis
+    restart: always
+    ports:
+      - "6379:6379"
+
+  api:
+    build: .
+    container_name: petradar-api
+    restart: always
+    ports:
+      - "3000:3000"
+    environment:
+      PORT: 3000
+      DB_HOST: postgres
+      DB_PORT: 5432
+      DB_USERNAME: postgres
+      DB_PASSWORD: postgres
+      DB_NAME: petradar_db
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+      APPLICATIONINSIGHTS_CONNECTION_STRING:
+      GENERIC_NOTIFY_EMAIL:
+    depends_on:
+      - postgres
+      - redis
