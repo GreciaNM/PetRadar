@@ -32,8 +32,16 @@ services:
       DB_NAME: petradar_db
       REDIS_HOST: redis
       REDIS_PORT: 6379
+
       APPLICATIONINSIGHTS_CONNECTION_STRING:
-      GENERIC_NOTIFY_EMAIL:
+
+      GENERIC_NOTIFY_EMAIL: gnavarretemexicano@gmail.com
+
+      MAIL_HOST: smtp.gmail.com
+      MAIL_PORT: 587
+      MAIL_USER: gnavarretemexicano@gmail.com
+      MAIL_PASS: apus cipi hvhy vlnc
+
     depends_on:
       - postgres
       - redis
